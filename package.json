@@ -1,0 +1,9 @@
+{
+  "name": "sms-backend",
+  "main": "backend.js",
+  "dependencies": {
+    "express": "latest",
+    "body-parser": "latest",
+    "twilio": "latest"
+  }
+}

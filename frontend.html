@@ -1,0 +1,85 @@
+<!--
+Demetris Hoplaros
+All the test frontend stuff are here...
+ -->
+
+<!DOCTYPE html>
+<html>
+
+<head>
+  <script src="https://code.jquery.com/jquery-3.1.0.min.js"></script>
+  <script>
+    //function to clean up the page
+    function cleanUp() {
+      $("#txtPhoneNumber").val("");
+      $("#chkTerms").prop('checked', false);
+      $("#chkOver18").prop('checked', false);
+    }
+
+    //function to make the api call
+    function requestSMS(phonenumber) {
+      console.log("Requesting SMS promo code for: ", phonenumber);
+
+      $.post("http://localhost:8081/api/sms-promotion", {
+        "phone": phonenumber
+      }).done(function(data) {
+        console.log("Done: ", data);
+        if (data.success) {
+          alert("SMS sent!");
+          cleanUp();
+        } else {
+          //alert("Error: ", data.error);
+        }
+      }).fail(function(data) {
+        console.log("Failed: ", data);
+        alert("Failed accessing api. Check backend...")
+      });
+    }
+
+    //function to submit request - check whether user checked the checkboxes (too many checks in one sentence....)
+    function submitPhone() {
+      //check if over 18
+      if ($("#chkOver18").is(":checked")) {
+        //check terms and conditions
+        if ($("#chkTerms").is(":checked")) {
+          //check if at least something is supplied for a phone - this should be sanitized
+          var thePhoneNumber = String($("#txtPhoneNumber").val()).trim();
+          if (thePhoneNumber.length) {
+            requestSMS(thePhoneNumber);
+          } else {
+            alert("Please supply a phone number");
+          }
+        } else {
+          alert("Please verify that you accept the terms and conditions");
+        }
+      } else {
+        alert("Please verify that you are over 18 years old.");
+      }
+    }
+
+    $(document).ready(function() {
+      cleanUp();
+    })
+  </script>
+</head>
+
+<body>
+
+  <h1>SMS Promotions</h1> Phone number:
+  <br>
+  <input type="text" id="txtPhoneNumber" placeholder="phonenumber...">
+  <br> I verify that I am over 18 years old
+  <br>
+  <input type="checkbox" id="chkOver18">
+  <br> I accept the terms and conditions
+  <br>
+  <input type="checkbox" id="chkTerms">
+  <br>
+  <br>
+  <input type="button" value="Submit" onclick="submitPhone()">
+
+  <p>If you click the "Submit" button, the promotion code will be sent to the supplied phone number.</p>
+
+</body>
+
+</html>
